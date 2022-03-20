@@ -1,25 +1,28 @@
-import logo from './logo.svg';
-import './App.css';
+import { useEffect, useReducer } from "react"
+import { AuthContext } from "./Auth/AuthContext"
+import { AuthReducer } from "./Auth/AuthReducer"
+import { AppRouter } from "./Routers/AppRouter"
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+const init = () => {
+    return JSON.parse( localStorage.getItem('user') )|| {logged:false};
+
+    
+
 }
+export const App = () => {
 
-export default App;
+    const [user,dispatch] = useReducer(AuthReducer,{},init);
+    useEffect(() => {
+        if(!user) return;
+        localStorage.setItem('user',JSON.stringify(user));
+    },[ user ]);
+    
+    return (
+        <AuthContext.Provider value={{
+            user,
+            dispatch
+        }}>
+        <AppRouter/>
+        </AuthContext.Provider>
+    )
+}
